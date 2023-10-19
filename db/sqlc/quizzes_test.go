@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func assertQuizWithArgs(t *testing.T, arg CreateQuizParams, quiz Quiz) {
+func assertQuizWithArgs(t *testing.T, arg *CreateQuizParams, quiz *Quiz) {
 	t.Helper()
 
 	require.Equal(t, arg.Title, quiz.Title)
@@ -17,7 +17,7 @@ func assertQuizWithArgs(t *testing.T, arg CreateQuizParams, quiz Quiz) {
 	require.NotZero(t, quiz.CreatedAt)
 }
 
-func assertQuizzesEqual(t *testing.T, quiz, target Quiz) {
+func assertQuizzesEqual(t *testing.T, quiz, target *Quiz) {
 	t.Helper()
 	require.NotEmpty(t, quiz)
 	require.NotEmpty(t, target)
@@ -29,9 +29,9 @@ func assertQuizzesEqual(t *testing.T, quiz, target Quiz) {
 	require.Equal(t, quiz.Attempts, target.Attempts)
 }
 
-func addNewQuiz(t *testing.T) (Quiz, error) {
+func addNewQuiz(t *testing.T) (*Quiz, error) {
 	t.Helper()
-	arg := CreateQuizParams{
+	arg := &CreateQuizParams{
 		Title: "Golang Quiz",
 		Description: sql.NullString{
 			String: "A quiz for the Golang programming language",
@@ -73,7 +73,7 @@ func TestGetQuiz(t *testing.T) {
 func TestUpdateQuiz(t *testing.T) {
 	quiz, _ := addNewQuiz(t)
 
-	arg := UpdateQuizParams{
+	arg := &UpdateQuizParams{
 		ID:    quiz.ID,
 		Title: "some random title change",
 		Description: sql.NullString{
