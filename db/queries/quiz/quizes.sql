@@ -6,7 +6,7 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM quizzes
 ORDER BY title;
 
--- name: CreateQuizzes :one
+-- name: CreateQuiz :one
 INSERT INTO quizzes (
     title, description
 ) VALUES (

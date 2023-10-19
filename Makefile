@@ -4,5 +4,8 @@ quiz_db_up:
 quiz_db_down:
 	migrate -path db/migrations/quiz -database "postgresql://db_user:db_pass@localhost:5432/quizes?sslmode=disable" down
 
+test:
+	go test ./... -cover -v
+
 sqlc:
 	sqlc generate
