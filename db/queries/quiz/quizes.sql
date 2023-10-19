@@ -14,6 +14,13 @@ INSERT INTO quizzes (
          )
 RETURNING *;
 
--- name: DeleteAuthor :exec
+-- name: UpdateQuiz :one
+UPDATE quizzes
+set title = $2,
+    description = $3
+WHERE id = $1
+RETURNING *;
+
+-- name: DeleteQuiz :exec
 DELETE FROM quizzes
 WHERE id = $1;
