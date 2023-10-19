@@ -1,5 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE TABLE "quiz" (
+CREATE TABLE "quizzes" (
                         "id" bigserial PRIMARY KEY,
                         "title" varchar(255) NOT NULL,
                         "description" text,
@@ -27,9 +27,9 @@ CREATE TABLE "answers" (
                            "createdAt" timestamp DEFAULT (now())
 );
 
-CREATE INDEX ON "quiz" ("id");
+CREATE INDEX ON "quizzes" ("id");
 
-CREATE INDEX ON "quiz" ("UUID");
+CREATE INDEX ON "quizzes" ("UUID");
 
 CREATE INDEX ON "quiz_question" ("id");
 
@@ -39,6 +39,6 @@ CREATE INDEX ON "answers" ("id");
 
 CREATE INDEX ON "answers" ("UUID");
 
-ALTER TABLE "quiz_question" ADD FOREIGN KEY ("quiz_id") REFERENCES "quiz" ("id");
+ALTER TABLE "quiz_question" ADD FOREIGN KEY ("quiz_id") REFERENCES "quizzes" ("id");
 
 ALTER TABLE "answers" ADD FOREIGN KEY ("quiz_question_id") REFERENCES "quiz_question" ("id");

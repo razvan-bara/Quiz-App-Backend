@@ -1,0 +1,17 @@
+version: "2"
+sql:
+    - schema: "./db/migrations/quiz/"
+      queries: "./db/queries/quiz/"
+      engine: "postgresql"
+      gen:
+        go:
+          package: "sqlc"
+          out: "./db/sqlc/"
+          emit_prepared_queries: false
+          emit_json_tags: true
+          emit_interface: false
+          emit_exact_table_names: false
+      database:
+          uri: "postgresql://db_user:db_pass@localhost:5432/quizes?sslmode=disable"
+      rules:
+          - sqlc/db-prepare
