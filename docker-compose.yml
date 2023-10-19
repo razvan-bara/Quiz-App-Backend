@@ -1,13 +1,13 @@
 version: '3.8'
 services:
-  articles_db:
+  quizzes_db:
     image: postgres
     restart: always
     container_name: vugo_quiz_db
     environment:
       - POSTGRES_USER=db_user
       - POSTGRES_PASSWORD=db_pass
-      - POSTGRES_DB=quizes
+      - POSTGRES_DB=quizzes
     ports:
       - '5432:5432'
   users_db:

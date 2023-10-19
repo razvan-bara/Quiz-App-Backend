@@ -101,5 +101,6 @@ func TestDeleteQuiz(t *testing.T) {
 
 	target, err := testQueries.GetQuiz(context.Background(), quiz.ID)
 	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, target)
 }
