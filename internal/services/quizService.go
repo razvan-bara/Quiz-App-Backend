@@ -42,20 +42,20 @@ func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, 
 	res := utils.GenerateQuizResponse(quiz, len(quizForm.Questions))
 	for i, questionDTO := range quizForm.Questions {
 
-		savedQuestion, err := qs.questionService.SaveQuestion(ctx, quiz.ID, questionDTO)
+		question, err := qs.questionService.SaveQuestion(ctx, quiz.ID, questionDTO)
 		if err != nil {
 			return nil, errors.New("error while saving question")
 		}
 
-		res.Questions[i] = utils.AddQuestionToQuizResponse(savedQuestion, len(questionDTO.Answers))
+		res.Questions[i] = utils.AddQuestionToQuizResponse(question, len(questionDTO.Answers))
 		for j, answerDTO := range questionDTO.Answers {
 
-			savedAnswer, err := qs.answerService.SaveAnswer(ctx, savedQuestion.ID, answerDTO)
+			answer, err := qs.answerService.SaveAnswer(ctx, question.ID, answerDTO)
 			if err != nil {
 				return nil, errors.New("error while saving answer")
 			}
 
-			res.Questions[i].Answers[j] = utils.ConvertAnswerModelToAnswerDTO(savedAnswer)
+			res.Questions[i].Answers[j] = utils.ConvertAnswerModelToAnswerDTO(answer)
 		}
 	}
 
