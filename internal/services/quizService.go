@@ -30,27 +30,27 @@ func (qs *QuizService) FindQuizById(id int64) (*db.Quiz, error) {
 	return qs.storage.GetQuiz(context.Background(), id)
 }
 
-func (qs *QuizService) ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error) {
+func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, error) {
 
 	ctx := context.Background()
 
-	savedQuiz, err := qs.SaveQuiz(ctx, quiz)
+	quiz, err := qs.SaveQuiz(ctx, &quizForm.QuizDTO)
 	if err != nil {
 		return nil, errors.New("error while saving quiz")
 	}
 
-	res := utils.GenerateQuizResponse(savedQuiz, len(quiz.Questions))
-	for i, question := range quiz.Questions {
+	res := utils.GenerateQuizResponse(quiz, len(quizForm.Questions))
+	for i, questionDTO := range quizForm.Questions {
 
-		savedQuestion, err := qs.questionService.SaveQuestion(ctx, savedQuiz.ID, question)
+		savedQuestion, err := qs.questionService.SaveQuestion(ctx, quiz.ID, questionDTO)
 		if err != nil {
 			return nil, errors.New("error while saving question")
 		}
 
-		res.Questions[i] = utils.AddQuestionToQuizResponse(savedQuestion, len(question.Answers))
-		for j, answer := range question.Answers {
+		res.Questions[i] = utils.AddQuestionToQuizResponse(savedQuestion, len(questionDTO.Answers))
+		for j, answerDTO := range questionDTO.Answers {
 
-			savedAnswer, err := qs.answerService.SaveAnswer(ctx, savedQuestion.ID, answer)
+			savedAnswer, err := qs.answerService.SaveAnswer(ctx, savedQuestion.ID, answerDTO)
 			if err != nil {
 				return nil, errors.New("error while saving answer")
 			}
@@ -62,7 +62,7 @@ func (qs *QuizService) ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, erro
 	return res, nil
 }
 
-func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizForm) (*db.Quiz, error) {
+func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error) {
 
 	quizArgs := &db.CreateQuizParams{
 		Title: swag.StringValue(quiz.Title),
