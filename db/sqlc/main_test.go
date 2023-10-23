@@ -10,7 +10,7 @@ import (
 
 const (
 	dbDriver = "postgres"
-	dbSource = "postgresql://db_user:db_pass@localhost:5432/quizes?sslmode=disable"
+	dbSource = "postgresql://db_user:db_pass@localhost:5432/quizzes?sslmode=disable"
 )
 
 var testQueries *Queries
