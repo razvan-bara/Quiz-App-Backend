@@ -10,9 +10,15 @@ quiz_db_down:
 quiz_reset_db:
 	make quiz_db_down && make quiz_db_up
 
+gen_quiz_swagger:
+	swagger generate server -f ./api/quizSwagger.yml -t ./api --exclude-main -s quizApi -m /sdto -a /squiz --skip-tag-packages
+
 
 test:
 	go test ./... -cover -v
 
 sqlc:
 	sqlc generate
+
+run_quiz:
+	go run ./cmd/quiz/main.go

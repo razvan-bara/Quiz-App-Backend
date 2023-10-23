@@ -1,0 +1,239 @@
+---
+info:
+    description: Endpoints for the quiz app REST API
+    title: Quiz microservice
+    version: 1.0.0
+produces:
+    - application/json
+consumes:
+    - application/json
+    - multipart/form-data
+schemes:
+    - http
+swagger: "2.0"
+paths:
+
+    /quizzes:
+        get:
+            tags:
+                - quiz
+            operationId: listQuizzes
+            responses:
+                200:
+                    description: list the available quizzes
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/quizDTO"
+        post:
+            tags:
+                - quiz
+            operationId: addQuiz
+            parameters:
+                - name: body
+                  in: body
+                  schema:
+                      $ref: "#/definitions/quizForm"
+            responses:
+                201:
+                    description: create quiz
+                    schema:
+                        $ref: "#/definitions/quizForm"
+
+                500:
+                    $ref: "#/responses/InternalError"
+
+    /quizzes/{id}:
+            parameters:
+                - type: integer
+                  name: id
+                  in: path
+                  description: quiz_id
+                  format: int64
+                  required: true
+
+            get:
+                tags:
+                    - quiz
+                operationId: getQuiz
+                responses:
+                    200:
+                        description: got quiz
+                        schema:
+                            $ref: "#/definitions/quizForm"
+                    404:
+                        $ref: "#/responses/NotFound"
+
+                    500:
+                        $ref: "#/responses/InternalError"
+
+            put:
+                tags:
+                    - quiz
+                operationId: updateQuiz
+                responses:
+                    200:
+                        description: update quiz
+                        schema:
+                            $ref: "#/definitions/quizForm"
+                    404:
+                        $ref: "#/responses/NotFound"
+                    500:
+                        $ref: "#/responses/InternalError"
+            delete:
+                tags:
+                    - quiz
+                operationId: deleteQuiz
+                responses:
+                    204:
+                        description: Deleted
+                    404:
+                        $ref: "#/responses/NotFound"
+                    500:
+                        $ref: "#/responses/InternalError"
+
+
+definitions:
+
+    quizForm:
+        description: request body matching create quiz form
+        type: object
+        allOf:
+            - $ref: "#/definitions/quizDTO"
+            - properties:
+                  questions:
+                    type: array
+                    minLength: 1
+                    x-go-name: "questions"
+                    items:
+                        type: object
+                        allOf:
+                            - $ref: "#/definitions/questionDTO"
+                            - properties:
+                                answers:
+                                    type: array
+                                    minLength: 1
+                                    items:
+                                        $ref: "#/definitions/answerDTO"
+
+
+
+
+    quizDTO:
+        type: object
+        required:
+            - title
+        properties:
+            ID:
+                type: integer
+                format: int64
+                readOnly: true
+            title:
+                type: string
+                minLength: 10
+            description:
+                type: string
+            attempts:
+                type: integer
+                format: int32
+                readOnly: true
+            uuid:
+                type: string
+                format: uuid
+                readOnly: true
+            createdAt:
+                type: string
+                format: date-time
+                readOnly: true
+
+    questionDTO:
+        type: object
+        required:
+            - title
+        properties:
+            ID:
+                type: integer
+                format: int64
+                readOnly: true
+            title:
+                type: string
+                minLength: 10
+            body:
+                type: string
+            quizID:
+                type: integer
+                format: int64
+                readOnly: true
+            uuid:
+                type: string
+                format: uuid
+                readOnly: true
+            createdAt:
+                type: string
+                format: date-time
+                readOnly: true
+
+    answerDTO:
+        type: object
+        required:
+            - title
+        properties:
+            ID:
+                type: integer
+                format: int64
+                readOnly: true
+            title:
+                type: string
+                minLength: 5
+            correct:
+                type: boolean
+                default: false
+            quizQuestionID:
+                type: integer
+                format: int64
+                readOnly: true
+            uuid:
+                type: string
+                format: uuid
+                readOnly: true
+            createdAt:
+                type: string
+                format: date-time
+                readOnly: true
+
+    error:
+        type: object
+        required:
+            - message
+            - code
+        properties:
+            message:
+                type: string
+            code:
+                type: integer
+responses:
+
+    BadRequest:
+        description: The request did not meet the requirements
+        schema:
+            $ref: "#/definitions/error"
+
+    Unauthorized:
+        description: Unauthorized to do the request
+        schema:
+            $ref: "#/definitions/error"
+
+    NotFound:
+        description: Resource not found
+        schema:
+            $ref: "#/definitions/error"
+
+    Forbidden:
+        description: Forbidden – you don't have permission to access
+        schema:
+            $ref: "#/definitions/error"
+
+    InternalError:
+        description: Internal server error
+        schema:
+            $ref: "#/definitions/error"
