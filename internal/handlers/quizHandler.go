@@ -19,7 +19,7 @@ func NewQuizHandler(quizService services.IQuizService) *QuizHandler {
 
 func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams) middleware.Responder {
 	quiz := req.Body
-	// add the quiz to db to get id
+
 	res, err := handler.quizService.ProcessNewQuiz(quiz)
 	if err != nil {
 		squiz.NewAddQuizInternalServerError().WithPayload(&sdto.Error{
