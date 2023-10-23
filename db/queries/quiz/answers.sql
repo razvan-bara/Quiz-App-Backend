@@ -2,20 +2,20 @@
 SELECT * FROM answers
 WHERE id = $1 LIMIT 1;
 
--- name: ListQuestionAnswers :many
+-- name: ListAnswers :many
 SELECT * FROM answers
-WHERE quiz_question_id = $1
+WHERE question_id = $1
 ORDER BY title;
 
--- name: CreateQuestionAnswer :one
+-- name: CreateAnswer :one
 INSERT INTO answers (
-    quiz_question_id, title
+    question_id, title, correct
 ) VALUES (
-             $1, $2
+             $1, $2, $3
          )
 RETURNING *;
 
--- name: UpdateQuestionAnswer :one
+-- name: UpdateAnswer :one
 UPDATE answers
 set title = $2
 WHERE id = $1
@@ -25,6 +25,6 @@ RETURNING *;
 DELETE FROM answers
 WHERE id = $1;
 
--- name: DeleteQuestionAnswers :exec
+-- name: DeleteAnswers :exec
 DELETE FROM answers
-WHERE quiz_question_id = $1;
+WHERE question_id = $1;
