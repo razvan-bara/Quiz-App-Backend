@@ -23,7 +23,7 @@ func assertQuizzesEqual(t *testing.T, quiz, target *Quiz) {
 	require.NotEmpty(t, target)
 	require.Equal(t, quiz.Title, target.Title)
 	require.Equal(t, quiz.Description, target.Description)
-	require.WithinDuration(t, quiz.CreatedAt.Time, target.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, quiz.CreatedAt, target.CreatedAt, time.Second)
 	require.Equal(t, quiz.UUID, target.UUID)
 	require.WithinDuration(t, quiz.PublishedAt.Time, target.PublishedAt.Time, time.Second)
 	require.Equal(t, quiz.Attempts, target.Attempts)

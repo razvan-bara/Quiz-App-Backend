@@ -4,8 +4,8 @@ CREATE TABLE "quizzes" (
                         "title" varchar(255) NOT NULL,
                         "description" text,
                         "attempts" integer DEFAULT 0,
-                        "UUID" uuid UNIQUE DEFAULT (uuid_generate_v4()),
-                        "createdAt" timestamp DEFAULT (now()),
+                        "UUID" uuid UNIQUE NOT NULL DEFAULT (uuid_generate_v4()),
+                        "createdAt" timestamp not null DEFAULT (now()),
                         "publishedAt" timestamp
 );
 
@@ -14,8 +14,8 @@ CREATE TABLE "quiz_questions" (
                                  "title" varchar(255) NOT NULL,
                                  "body" text,
                                  "quiz_id" bigint NOT NULL,
-                                 "UUID" uuid UNIQUE DEFAULT (uuid_generate_v4()),
-                                 "createdAt" timestamp DEFAULT (now())
+                                 "UUID" uuid UNIQUE NOT NULL DEFAULT (uuid_generate_v4()),
+                                 "createdAt" timestamp not null DEFAULT (now())
 );
 
 CREATE TABLE "answers" (
@@ -23,8 +23,8 @@ CREATE TABLE "answers" (
                            "title" varchar(255) NOT NULL,
                            "correct" boolean DEFAULT false,
                            "quiz_question_id" bigint NOT NULL,
-                           "UUID" uuid UNIQUE DEFAULT (uuid_generate_v4()),
-                           "createdAt" timestamp DEFAULT (now())
+                           "UUID" uuid UNIQUE NOT NULL DEFAULT (uuid_generate_v4()),
+                           "createdAt" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON "quizzes" ("id");
