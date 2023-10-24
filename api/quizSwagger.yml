@@ -100,19 +100,24 @@ definitions:
         type: object
         allOf:
             - $ref: "#/definitions/quizDTO"
-            - properties:
+            - type: object
+              required:
+                  - questions
+              properties:
                   questions:
                     type: array
-                    minLength: 1
-                    x-go-name: "questions"
+                    minItems: 2
                     items:
                         type: object
                         allOf:
                             - $ref: "#/definitions/questionDTO"
-                            - properties:
+                            - type: object
+                              required:
+                                  - answers
+                              properties:
                                 answers:
                                     type: array
-                                    minLength: 1
+                                    minItems: 2
                                     items:
                                         $ref: "#/definitions/answerDTO"
 
