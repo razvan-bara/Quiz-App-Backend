@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"VUGO-API/api/sdto"
-	db "VUGO-API/db/sqlc"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/razvan-bara/VUGO-API/api/sdto"
+	db "github.com/razvan-bara/VUGO-API/db/sqlc"
 )
 
 func GenerateQuizResponse(quiz *db.Quiz, numOfQuestions int) *sdto.QuizForm {

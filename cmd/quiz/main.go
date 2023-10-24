@@ -1,14 +1,15 @@
 package main
 
 import (
-	"VUGO-API/api/quiz_api"
-	"VUGO-API/api/quiz_api/squiz"
-	db "VUGO-API/db/sqlc"
-	"VUGO-API/internal/handlers"
-	"VUGO-API/internal/services"
 	"database/sql"
 	"github.com/go-openapi/loads"
+	_ "github.com/golang/mock/mockgen/model"
 	_ "github.com/lib/pq"
+	"github.com/razvan-bara/VUGO-API/api/quiz_api"
+	"github.com/razvan-bara/VUGO-API/api/quiz_api/squiz"
+	db "github.com/razvan-bara/VUGO-API/db/sqlc"
+	"github.com/razvan-bara/VUGO-API/internal/handlers"
+	"github.com/razvan-bara/VUGO-API/internal/services"
 	"log"
 )
 

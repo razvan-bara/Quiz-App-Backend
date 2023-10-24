@@ -20,5 +20,8 @@ test:
 sqlc:
 	sqlc generate
 
+mockStorage:
+	mockgen -destination ./db/sqlc/mock/storage.go --build_flags=--mod=mod -package mockdb github.com/razvan-bara/VUGO-API/db/sqlc Storage
+
 run_quiz:
 	go run ./cmd/quiz/main.go

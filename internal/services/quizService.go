@@ -1,25 +1,29 @@
 package services
 
 import (
-	"VUGO-API/api/sdto"
-	db "VUGO-API/db/sqlc"
-	"VUGO-API/internal/utils"
 	"context"
 	"database/sql"
 	"errors"
 	"github.com/go-openapi/swag"
+	"github.com/razvan-bara/VUGO-API/api/sdto"
+	db "github.com/razvan-bara/VUGO-API/db/sqlc"
+	"github.com/razvan-bara/VUGO-API/internal/utils"
 )
 
 type IQuizService interface {
 	FindQuizById(id int64) (*db.Quiz, error)
 	ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error)
-	SaveQuiz(ctx context.Context, quiz *sdto.QuizForm) (*db.Quiz, error)
+	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error)
 }
 
 type QuizService struct {
 	storage         db.Storage
 	questionService IQuestionService
 	answerService   IAnswerService
+}
+
+func NewQuizServiceStorage(storage db.Storage) *QuizService {
+	return &QuizService{storage: storage}
 }
 
 func NewQuizService(storage db.Storage, questionService IQuestionService, answerService IAnswerService) *QuizService {

@@ -1,11 +1,11 @@
 package services
 
 import (
-	"VUGO-API/api/sdto"
-	db "VUGO-API/db/sqlc"
 	"context"
 	"database/sql"
 	"github.com/go-openapi/swag"
+	"github.com/razvan-bara/VUGO-API/api/sdto"
+	db "github.com/razvan-bara/VUGO-API/db/sqlc"
 )
 
 type IQuestionService interface {

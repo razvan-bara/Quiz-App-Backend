@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"VUGO-API/api/quiz_api/squiz"
-	"VUGO-API/api/sdto"
-	"VUGO-API/internal/services"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
+	"github.com/razvan-bara/VUGO-API/api/quiz_api/squiz"
+	"github.com/razvan-bara/VUGO-API/api/sdto"
+	"github.com/razvan-bara/VUGO-API/internal/services"
 	"net/http"
 )
 
