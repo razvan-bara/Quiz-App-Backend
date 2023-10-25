@@ -8,15 +8,16 @@ import (
 
 type Storage interface {
 	Querier
+	ExecuteWithTx(ctx context.Context, f func(*Queries) error) error
 }
 
 type SQLStorage struct {
-	Storage
+	Querier
 	db *sql.DB
 }
 
 func NewSQLStorage(db *sql.DB) *SQLStorage {
-	return &SQLStorage{Storage: New(db), db: db}
+	return &SQLStorage{Querier: New(db), db: db}
 }
 func (storage *SQLStorage) ExecuteWithTx(ctx context.Context, f func(*Queries) error) error {
 	tx, err := storage.db.BeginTx(ctx, nil)

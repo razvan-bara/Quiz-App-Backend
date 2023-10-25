@@ -24,7 +24,7 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams) middleware.R
 	if err != nil {
 		squiz.NewAddQuizInternalServerError().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusInternalServerError),
-			Message: swag.String(err.Error()),
+			Message: swag.String("something went wrong while adding a quiz"),
 		})
 	}
 

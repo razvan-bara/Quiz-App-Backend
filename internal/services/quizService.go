@@ -36,7 +36,6 @@ func (qs *QuizService) FindQuizById(id int64) (*db.Quiz, error) {
 func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, error) {
 
 	ctx := context.Background()
-
 	quiz, err := qs.SaveQuiz(ctx, &quizForm.QuizDTO)
 	if err != nil {
 		return nil, err

@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal("couldn't connect to db")
 	}
-	queries := db.New(conn)
+	queries := db.NewSQLStorage(conn)
 
 	questionService := services.NewQuestionService(queries)
 	answerService := services.NewAnswerService(queries)
