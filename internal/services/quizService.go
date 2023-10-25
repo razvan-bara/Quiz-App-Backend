@@ -10,6 +10,7 @@ import (
 )
 
 type IQuizService interface {
+	ListQuizzes() ([]*sdto.QuizDTO, error)
 	FindQuizById(id int64) (*db.Quiz, error)
 	ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error)
 	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error)
@@ -27,6 +28,16 @@ func NewQuizServiceStorage(storage db.Storage) *QuizService {
 
 func NewQuizService(storage db.Storage, questionService IQuestionService, answerService IAnswerService) *QuizService {
 	return &QuizService{storage: storage, questionService: questionService, answerService: answerService}
+}
+
+func (qs *QuizService) ListQuizzes() ([]*sdto.QuizDTO, error) {
+	quizzes, err := qs.storage.ListQuizzes(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	dtos := utils.ConvertQuizModelsToQuizDTOs(quizzes)
+	return dtos, nil
 }
 
 func (qs *QuizService) FindQuizById(id int64) (*db.Quiz, error) {

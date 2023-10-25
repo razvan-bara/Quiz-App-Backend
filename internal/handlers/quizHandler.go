@@ -22,11 +22,23 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams) middleware.R
 
 	res, err := handler.quizService.ProcessNewQuiz(quiz)
 	if err != nil {
-		squiz.NewAddQuizInternalServerError().WithPayload(&sdto.Error{
+		return squiz.NewAddQuizInternalServerError().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusInternalServerError),
 			Message: swag.String("something went wrong while adding a quiz"),
 		})
 	}
 
 	return squiz.NewAddQuizCreated().WithPayload(res)
+}
+
+func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams) middleware.Responder {
+	quizzes, err := handler.quizService.ListQuizzes()
+	if err != nil {
+		return squiz.NewListQuizzesInternalServerError().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusInternalServerError),
+			Message: swag.String("couldn't fetch all quizzes"),
+		})
+	}
+
+	return squiz.NewListQuizzesOK().WithPayload(quizzes)
 }

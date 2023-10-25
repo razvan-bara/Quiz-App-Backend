@@ -33,6 +33,14 @@ func AddQuestionToQuizResponse(question *db.Question, numOfAnswers int) *sdto.Qu
 	}
 }
 
+func ConvertQuizModelsToQuizDTOs(questions []*db.Quiz) []*sdto.QuizDTO {
+	q := make([]*sdto.QuizDTO, len(questions))
+	for i := 0; i < len(q); i++ {
+		q[i] = ConvertQuizModelToQuizDTO(questions[i])
+	}
+	return q
+}
+
 func ConvertQuestionModelToQuestionDTO(question *db.Question) *sdto.QuestionDTO {
 	return &sdto.QuestionDTO{
 		ID:        question.ID,

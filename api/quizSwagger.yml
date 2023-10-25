@@ -25,6 +25,9 @@ paths:
                         type: array
                         items:
                             $ref: "#/definitions/quizDTO"
+
+                500:
+                    $ref: "#/responses/InternalError"
         post:
             tags:
                 - quiz
