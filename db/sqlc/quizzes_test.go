@@ -48,13 +48,20 @@ func addNewQuiz(t *testing.T) (*Quiz, error) {
 
 func TestCreateQuiz(t *testing.T) {
 
-	//t.Run("create quiz with empty title", func(t *testing.T) {
-	//	arg := CreateQuizParams{}
-	//
-	//	quiz, err := testQueries.CreateQuiz(context.Background(), arg)
-	//	require.Error(t, err)
-	//	require.Empty(t, quiz)
-	//})
+	t.Run("create quiz with empty description", func(t *testing.T) {
+		arg := &CreateQuizParams{
+			Title: "Some valid quiz title",
+			Description: sql.NullString{
+				String: "something",
+				Valid:  false,
+			},
+		}
+
+		quiz, err := testQueries.CreateQuiz(context.Background(), arg)
+		require.NoError(t, err)
+		require.NotEmpty(t, quiz)
+		require.Empty(t, quiz.Description)
+	})
 
 	t.Run("create quiz", func(t *testing.T) {
 		addNewQuiz(t)

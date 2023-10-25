@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"github.com/go-openapi/swag"
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	db "github.com/razvan-bara/VUGO-API/db/sqlc"
@@ -40,23 +39,23 @@ func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, 
 
 	quiz, err := qs.SaveQuiz(ctx, &quizForm.QuizDTO)
 	if err != nil {
-		return nil, errors.New("error while saving quiz")
+		return nil, err
 	}
 
 	res := utils.GenerateQuizResponse(quiz, len(quizForm.Questions))
-	for i, questionDTO := range quizForm.Questions {
+	for i, questionWithAnswersDTO := range quizForm.Questions {
 
-		question, err := qs.questionService.SaveQuestion(ctx, quiz.ID, questionDTO)
+		question, err := qs.questionService.SaveQuestion(ctx, quiz.ID, &questionWithAnswersDTO.QuestionDTO)
 		if err != nil {
-			return nil, errors.New("error while saving question")
+			return nil, err
 		}
 
-		res.Questions[i] = utils.AddQuestionToQuizResponse(question, len(questionDTO.Answers))
-		for j, answerDTO := range questionDTO.Answers {
+		res.Questions[i] = utils.AddQuestionToQuizResponse(question, len(questionWithAnswersDTO.Answers))
+		for j, answerDTO := range questionWithAnswersDTO.Answers {
 
 			answer, err := qs.answerService.SaveAnswer(ctx, question.ID, answerDTO)
 			if err != nil {
-				return nil, errors.New("error while saving answer")
+				return nil, err
 			}
 
 			res.Questions[i].Answers[j] = utils.ConvertAnswerModelToAnswerDTO(answer)

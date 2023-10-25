@@ -9,7 +9,7 @@ import (
 )
 
 type IQuestionService interface {
-	SaveQuestion(ctx context.Context, quizID int64, question *sdto.QuizFormQuestionsItems0) (*db.Question, error)
+	SaveQuestion(ctx context.Context, quizID int64, question *sdto.QuestionDTO) (*db.Question, error)
 }
 
 type QuestionService struct {
@@ -20,7 +20,7 @@ func NewQuestionService(storage db.Storage) *QuestionService {
 	return &QuestionService{storage: storage}
 }
 
-func (qs *QuestionService) SaveQuestion(ctx context.Context, quizID int64, question *sdto.QuizFormQuestionsItems0) (*db.Question, error) {
+func (qs *QuestionService) SaveQuestion(ctx context.Context, quizID int64, question *sdto.QuestionDTO) (*db.Question, error) {
 	questionArgs := &db.CreateQuestionParams{
 		QuizID: quizID,
 		Title:  swag.StringValue(question.Title),
