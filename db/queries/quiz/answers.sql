@@ -2,7 +2,7 @@
 SELECT * FROM answers
 WHERE id = $1 LIMIT 1;
 
--- name: ListAnswers :many
+-- name: ListAnswersForQuestion :many
 SELECT * FROM answers
 WHERE question_id = $1
 ORDER BY title;
@@ -17,7 +17,7 @@ RETURNING *;
 
 -- name: UpdateAnswer :one
 UPDATE answers
-set title = $2
+set title = $2, correct = $3
 WHERE id = $1
 RETURNING *;
 
@@ -25,6 +25,6 @@ RETURNING *;
 DELETE FROM answers
 WHERE id = $1;
 
--- name: DeleteAnswers :exec
+-- name: DeleteAnswersForQuestion :exec
 DELETE FROM answers
 WHERE question_id = $1;
