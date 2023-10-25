@@ -9,6 +9,7 @@ import (
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	db "github.com/razvan-bara/VUGO-API/db/sqlc"
 	mockdb "github.com/razvan-bara/VUGO-API/db/sqlc/mock"
+	mockService "github.com/razvan-bara/VUGO-API/internal/services/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"testing"
@@ -19,7 +20,9 @@ func getTestQuizService(t *testing.T) (IQuizService, *mockdb.MockStorage, *gomoc
 	t.Helper()
 	ctrl := gomock.NewController(t)
 	mockStorage := mockdb.NewMockStorage(ctrl)
+
 	quizService := NewQuizServiceStorage(mockStorage)
+
 	return quizService, mockStorage, ctrl
 }
 
@@ -123,6 +126,99 @@ func TestQuizService_SaveQuiz(t *testing.T) {
 		require.NotEmpty(t, gotQuiz)
 		require.Empty(t, gotQuiz.Description)
 	})
+}
+
+func TestQuizService_ProcessNewQuiz(t *testing.T) {
+
+	ctrl := gomock.NewController(t)
+	mockStorage := mockdb.NewMockStorage(ctrl)
+
+	questionService := mockService.NewMockIQuestionService(ctrl)
+	answerService := mockService.NewMockIAnswerService(ctrl)
+	quizService := NewQuizService(mockStorage, questionService, answerService)
+	defer ctrl.Finish()
+
+	quizForm := &sdto.QuizForm{
+		QuizDTO: *generateQuizDTO(),
+		Questions: []*sdto.QuizFormQuestionsItems0{
+			{
+				QuestionDTO: *generateQuestionDTO(),
+				Answers: []*sdto.AnswerDTO{
+					generateAnswerDTO(),
+					generateAnswerDTO(),
+				},
+			},
+			{
+				QuestionDTO: *generateQuestionDTO(),
+				Answers: []*sdto.AnswerDTO{
+					generateAnswerDTO(),
+					generateAnswerDTO(),
+					generateAnswerDTO(),
+					generateAnswerDTO(),
+				},
+			},
+		},
+	}
+
+	createQuizArgs := generateCreateQuizParams(&quizForm.QuizDTO)
+	quiz := generateQuiz(createQuizArgs)
+	mockStorage.
+		EXPECT().
+		CreateQuiz(gomock.Any(), gomock.Eq(createQuizArgs)).
+		Times(1).
+		Return(quiz, nil)
+
+	for _, questionWithAnswersDTO := range quizForm.Questions {
+
+		createQuestionArgs := generateQuestionCreateArgs(quiz.ID, &questionWithAnswersDTO.QuestionDTO)
+		question := generateQuestion(createQuestionArgs)
+
+		questionService.
+			EXPECT().
+			SaveQuestion(gomock.Any(), gomock.Eq(quiz.ID), gomock.Eq(&questionWithAnswersDTO.QuestionDTO)).
+			Times(1).
+			Return(question, nil)
+
+		for _, answerDTO := range questionWithAnswersDTO.Answers {
+
+			createAnswerArgs := generateCreateAnswerParams(question.ID, answerDTO)
+			answer := generateAnswer(createAnswerArgs, question.ID)
+
+			answerService.
+				EXPECT().
+				SaveAnswer(gomock.Any(), gomock.Eq(question.ID), gomock.Eq(answerDTO)).
+				Times(1).
+				Return(answer, nil)
+
+		}
+	}
+
+	gotQuizForm, err := quizService.ProcessNewQuiz(quizForm)
+	require.NoError(t, err)
+	require.Equal(t, gotQuizForm.Title, quizForm.Title)
+	require.Equal(t, gotQuizForm.Description, quizForm.Description)
+	require.Equal(t, len(gotQuizForm.Questions), len(quizForm.Questions))
+	for i, question := range gotQuizForm.Questions {
+		require.NotZero(t, question.ID)
+		require.NotZero(t, question.UUID)
+		require.NotZero(t, question.CreatedAt)
+		require.Equal(t, question.QuizID, gotQuizForm.QuizDTO.ID)
+
+		expQuestion := quizForm.Questions[i]
+		require.Equal(t, question.Body, expQuestion.Body)
+		require.Equal(t, question.Title, expQuestion.Title)
+		require.Equal(t, len(question.Answers), len(expQuestion.Answers))
+
+		for j, answer := range question.Answers {
+
+			require.NotZero(t, answer.ID)
+			require.NotZero(t, answer.UUID)
+			require.NotZero(t, answer.CreatedAt)
+			require.Equal(t, answer.QuizQuestionID, question.ID)
+			require.Equal(t, answer.Title, expQuestion.Answers[j].Title)
+			require.Equal(t, answer.Correct, expQuestion.Answers[j].Correct)
+		}
+	}
 }
 
 func generateQuiz(args *db.CreateQuizParams) *db.Quiz {
