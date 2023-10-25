@@ -42,6 +42,7 @@ func main() {
 	server.Port = 3000
 
 	swaggerAPI.AddQuizHandler = squiz.AddQuizHandlerFunc(quizHandler.ProcessNewQuiz)
+	swaggerAPI.ListQuizzesHandler = squiz.ListQuizzesHandlerFunc(quizHandler.ListQuizzesHandler)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
