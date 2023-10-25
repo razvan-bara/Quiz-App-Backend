@@ -23,5 +23,8 @@ sqlc:
 mockStorage:
 	mockgen -destination ./db/sqlc/mock/storage.go --build_flags=--mod=mod -package mockdb github.com/razvan-bara/VUGO-API/db/sqlc Storage
 
+mockServices:
+	mockgen -destination ./internal/services/mock/services.go --build_flags=--mod=mod -package mockService github.com/razvan-bara/VUGO-API/internal/services IQuizService,IQuestionService,IAnswerService
+
 run_quiz:
 	go run ./cmd/quiz/main.go
