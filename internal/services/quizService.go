@@ -15,6 +15,9 @@ type IQuizService interface {
 	GetCompleteQuiz(id int64) (*sdto.QuizForm, error)
 	ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error)
 	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error)
+	UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm) (*sdto.QuizForm, error)
+	UpdateQuiz(quizID int64, quiz *sdto.QuizDTO) (*sdto.QuizDTO, error)
+	DeleteQuiz(quizID int64) error
 }
 
 type QuizService struct {
@@ -116,6 +119,49 @@ func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, 
 	return res, nil
 }
 
+func (qs *QuizService) UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm) (*sdto.QuizForm, error) {
+
+	quiz, err := qs.UpdateQuiz(quizID, &quizForm.QuizDTO)
+	if err != nil {
+		return nil, err
+	}
+
+	quizForm.QuizDTO = *quiz
+	for i, question := range quizForm.Questions {
+		var questionDTO *sdto.QuestionDTO
+		if question.ID == 0 {
+			newQuestion, err := qs.questionService.SaveQuestion(context.Background(), quiz.ID, &question.QuestionDTO)
+			if err != nil {
+				return nil, err
+			}
+			questionDTO = utils.ConvertQuestionModelToQuestionDTO(newQuestion)
+		} else {
+			questionDTO, err = qs.questionService.UpdateQuestion(&question.QuestionDTO)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		quizForm.Questions[i].QuestionDTO = *questionDTO
+		for j, answer := range question.Answers {
+			var answerDTO *sdto.AnswerDTO
+			if answer.ID == 0 {
+				newAnswer, err := qs.answerService.SaveAnswer(context.Background(), questionDTO.ID, answer)
+				if err != nil {
+					return nil, err
+				}
+				answerDTO = utils.ConvertAnswerModelToAnswerDTO(newAnswer)
+			} else {
+				answerDTO, err = qs.answerService.UpdateAnswer(answer)
+			}
+
+			quizForm.Questions[i].Answers[j] = answerDTO
+		}
+	}
+
+	return quizForm, nil
+}
+
 func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error) {
 
 	quizArgs := &db.CreateQuizParams{
@@ -136,4 +182,31 @@ func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Qu
 	}
 
 	return savedQuiz, nil
+}
+
+func (qs *QuizService) UpdateQuiz(quizID int64, quiz *sdto.QuizDTO) (*sdto.QuizDTO, error) {
+
+	args := &db.UpdateQuizParams{
+		ID:    quizID,
+		Title: swag.StringValue(quiz.Title),
+		Description: sql.NullString{
+			String: quiz.Description,
+			Valid:  false,
+		},
+	}
+
+	if args.Description.String != "" {
+		args.Description.Valid = true
+	}
+
+	updatedQuiz, err := qs.storage.UpdateQuiz(context.Background(), args)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.ConvertQuizModelToQuizDTO(updatedQuiz), nil
+}
+
+func (qs *QuizService) DeleteQuiz(quizID int64) error {
+	return qs.storage.DeleteQuiz(context.Background(), quizID)
 }

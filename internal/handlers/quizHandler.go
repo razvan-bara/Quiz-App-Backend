@@ -55,3 +55,28 @@ func (handler *QuizHandler) GetQuiz(params squiz.GetQuizParams) middleware.Respo
 
 	return squiz.NewGetQuizOK().WithPayload(quiz)
 }
+
+func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams) middleware.Responder {
+
+	quiz, err := handler.quizService.UpdateCompleteQuiz(params.ID, params.Body)
+	if err != nil {
+		return squiz.NewGetQuizNotFound().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusNotFound),
+			Message: swag.String("couldn't find specified quiz"),
+		})
+	}
+
+	return squiz.NewUpdateQuizOK().WithPayload(quiz)
+}
+
+func (handler *QuizHandler) DeleteQuiz(params squiz.DeleteQuestionParams) middleware.Responder {
+	err := handler.quizService.DeleteQuiz(params.ID)
+	if err != nil {
+		return squiz.NewDeleteQuestionNotFound().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusNotFound),
+			Message: swag.String("couldn't delete quiz"),
+		})
+	}
+
+	return squiz.NewDeleteQuizNoContent()
+}
