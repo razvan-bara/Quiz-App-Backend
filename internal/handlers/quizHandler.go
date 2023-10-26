@@ -42,3 +42,16 @@ func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams) m
 
 	return squiz.NewListQuizzesOK().WithPayload(quizzes)
 }
+
+func (handler *QuizHandler) GetQuiz(params squiz.GetQuizParams) middleware.Responder {
+
+	quiz, err := handler.quizService.GetCompleteQuiz(params.ID)
+	if err != nil {
+		return squiz.NewGetQuizNotFound().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusNotFound),
+			Message: swag.String("couldn't find specified quiz"),
+		})
+	}
+
+	return squiz.NewGetQuizOK().WithPayload(quiz)
+}

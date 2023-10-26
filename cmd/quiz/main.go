@@ -43,6 +43,7 @@ func main() {
 
 	swaggerAPI.AddQuizHandler = squiz.AddQuizHandlerFunc(quizHandler.ProcessNewQuiz)
 	swaggerAPI.ListQuizzesHandler = squiz.ListQuizzesHandlerFunc(quizHandler.ListQuizzesHandler)
+	swaggerAPI.GetQuizHandler = squiz.GetQuizHandlerFunc(quizHandler.GetQuiz)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)

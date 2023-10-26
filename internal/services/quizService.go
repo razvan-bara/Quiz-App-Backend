@@ -12,6 +12,7 @@ import (
 type IQuizService interface {
 	ListQuizzes() ([]*sdto.QuizDTO, error)
 	FindQuizById(id int64) (*db.Quiz, error)
+	GetCompleteQuiz(id int64) (*sdto.QuizForm, error)
 	ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error)
 	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error)
 }
@@ -38,6 +39,46 @@ func (qs *QuizService) ListQuizzes() ([]*sdto.QuizDTO, error) {
 
 	dtos := utils.ConvertQuizModelsToQuizDTOs(quizzes)
 	return dtos, nil
+}
+
+func (qs *QuizService) GetCompleteQuiz(id int64) (*sdto.QuizForm, error) {
+	qf := &sdto.QuizForm{
+		QuizDTO:   sdto.QuizDTO{},
+		Questions: nil,
+	}
+	ctx := context.Background()
+
+	quiz, err := qs.storage.GetQuiz(ctx, id)
+	qf.QuizDTO = *utils.ConvertQuizModelToQuizDTO(quiz)
+
+	if err != nil {
+		return nil, err
+	}
+
+	questions, err := qs.storage.ListQuestions(ctx, quiz.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	qf.Questions = make([]*sdto.QuizFormQuestionsItems0, len(questions))
+	for i, question := range questions {
+
+		answers, err := qs.storage.ListAnswersForQuestion(ctx, question.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		qf.Questions[i] = &sdto.QuizFormQuestionsItems0{
+			QuestionDTO: *utils.ConvertQuestionModelToQuestionDTO(question),
+			Answers:     make([]*sdto.AnswerDTO, len(answers)),
+		}
+
+		for j, answer := range answers {
+			qf.Questions[i].Answers[j] = utils.ConvertAnswerModelToAnswerDTO(answer)
+		}
+	}
+
+	return qf, nil
 }
 
 func (qs *QuizService) FindQuizById(id int64) (*db.Quiz, error) {
