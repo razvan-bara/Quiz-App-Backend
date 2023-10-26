@@ -74,6 +74,11 @@ paths:
                 tags:
                     - quiz
                 operationId: updateQuiz
+                parameters:
+                    - name: body
+                      in: body
+                      schema:
+                          $ref: "#/definitions/quizForm"
                 responses:
                     200:
                         description: update quiz
@@ -94,6 +99,46 @@ paths:
                         $ref: "#/responses/NotFound"
                     500:
                         $ref: "#/responses/InternalError"
+
+    /questions/{id}:
+        delete:
+            tags:
+                - question
+            parameters:
+                - type: integer
+                  name: id
+                  in: path
+                  description: question_id
+                  format: int64
+                  required: true
+            operationId: deleteQuestion
+            responses:
+                204:
+                    description: Deleted question
+                404:
+                    $ref: "#/responses/NotFound"
+                500:
+                    $ref: "#/responses/InternalError"
+
+    /answers/{id}:
+        delete:
+            tags:
+                - answer
+            operationId: deleteAnswer
+            parameters:
+                - type: integer
+                  name: id
+                  in: path
+                  description: answer_id
+                  format: int64
+                  required: true
+            responses:
+                204:
+                    description: Deleted answer
+                404:
+                    $ref: "#/responses/NotFound"
+                500:
+                    $ref: "#/responses/InternalError"
 
 
 definitions:
@@ -135,7 +180,6 @@ definitions:
             ID:
                 type: integer
                 format: int64
-                readOnly: true
             title:
                 type: string
                 minLength: 10
@@ -144,15 +188,12 @@ definitions:
             attempts:
                 type: integer
                 format: int32
-                readOnly: true
             uuid:
                 type: string
                 format: uuid
-                readOnly: true
             createdAt:
                 type: string
                 format: date-time
-                readOnly: true
 
     questionDTO:
         type: object
@@ -162,7 +203,6 @@ definitions:
             ID:
                 type: integer
                 format: int64
-                readOnly: true
             title:
                 type: string
                 minLength: 10
@@ -171,15 +211,12 @@ definitions:
             quizID:
                 type: integer
                 format: int64
-                readOnly: true
             uuid:
                 type: string
                 format: uuid
-                readOnly: true
             createdAt:
                 type: string
                 format: date-time
-                readOnly: true
 
     answerDTO:
         type: object
@@ -189,7 +226,6 @@ definitions:
             ID:
                 type: integer
                 format: int64
-                readOnly: true
             title:
                 type: string
                 minLength: 5
@@ -199,15 +235,12 @@ definitions:
             quizQuestionID:
                 type: integer
                 format: int64
-                readOnly: true
             uuid:
                 type: string
                 format: uuid
-                readOnly: true
             createdAt:
                 type: string
                 format: date-time
-                readOnly: true
 
     error:
         type: object
