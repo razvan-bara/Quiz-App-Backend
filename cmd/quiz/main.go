@@ -29,6 +29,8 @@ func main() {
 	answerService := services.NewAnswerService(queries)
 	quizService := services.NewQuizService(queries, questionService, answerService)
 	quizHandler := handlers.NewQuizHandler(quizService)
+	questionHandler := handlers.NewQuestionHandler(questionService)
+	answerHandler := handlers.NewAnswerHandler(answerService)
 
 	swaggerSpec, err := loads.Analyzed(quiz_api.SwaggerJSON, "")
 	if err != nil {
@@ -44,7 +46,10 @@ func main() {
 	swaggerAPI.AddQuizHandler = squiz.AddQuizHandlerFunc(quizHandler.ProcessNewQuiz)
 	swaggerAPI.ListQuizzesHandler = squiz.ListQuizzesHandlerFunc(quizHandler.ListQuizzesHandler)
 	swaggerAPI.GetQuizHandler = squiz.GetQuizHandlerFunc(quizHandler.GetQuiz)
-
+	swaggerAPI.UpdateQuizHandler = squiz.UpdateQuizHandlerFunc(quizHandler.UpdateQuiz)
+	swaggerAPI.DeleteQuestionHandler = squiz.DeleteQuestionHandlerFunc(quizHandler.DeleteQuiz)
+	swaggerAPI.DeleteQuestionHandler = squiz.DeleteQuestionHandlerFunc(questionHandler.DeleteQuestion)
+	swaggerAPI.DeleteAnswerHandler = squiz.DeleteAnswerHandlerFunc(answerHandler.DeleteAnswer)
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
