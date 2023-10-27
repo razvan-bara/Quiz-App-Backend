@@ -69,7 +69,7 @@ func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams) middleware
 	return squiz.NewUpdateQuizOK().WithPayload(quiz)
 }
 
-func (handler *QuizHandler) DeleteQuiz(params squiz.DeleteQuestionParams) middleware.Responder {
+func (handler *QuizHandler) DeleteQuiz(params squiz.DeleteQuizParams) middleware.Responder {
 	err := handler.quizService.DeleteQuiz(params.ID)
 	if err != nil {
 		return squiz.NewDeleteQuestionNotFound().WithPayload(&sdto.Error{

@@ -47,7 +47,7 @@ func main() {
 	swaggerAPI.ListQuizzesHandler = squiz.ListQuizzesHandlerFunc(quizHandler.ListQuizzesHandler)
 	swaggerAPI.GetQuizHandler = squiz.GetQuizHandlerFunc(quizHandler.GetQuiz)
 	swaggerAPI.UpdateQuizHandler = squiz.UpdateQuizHandlerFunc(quizHandler.UpdateQuiz)
-	swaggerAPI.DeleteQuestionHandler = squiz.DeleteQuestionHandlerFunc(quizHandler.DeleteQuiz)
+	swaggerAPI.DeleteQuizHandler = squiz.DeleteQuizHandlerFunc(quizHandler.DeleteQuiz)
 	swaggerAPI.DeleteQuestionHandler = squiz.DeleteQuestionHandlerFunc(questionHandler.DeleteQuestion)
 	swaggerAPI.DeleteAnswerHandler = squiz.DeleteAnswerHandlerFunc(answerHandler.DeleteAnswer)
 	if err := server.Serve(); err != nil {
