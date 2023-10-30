@@ -11,10 +11,25 @@ import (
 
 type IUserService interface {
 	AddUser(body *sdto.RegisterRequest) (*sdto.User, error)
+	AttemptLogin(body *sdto.LoginRequest) (*sdto.User, error)
 }
 
 type UserService struct {
 	storage db.Storage
+}
+
+func (us UserService) AttemptLogin(loginBody *sdto.LoginRequest) (*sdto.User, error) {
+	user, err := us.storage.GetUserByEmail(context.Background(), loginBody.Email.String())
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(swag.StringValue(loginBody.Password)))
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.ConvertUserModelToUserDTO(user), nil
 }
 
 func (us UserService) AddUser(registerBody *sdto.RegisterRequest) (*sdto.User, error) {

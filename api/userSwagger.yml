@@ -49,6 +49,8 @@ paths:
             description: login user
             schema:
               $ref: "#/definitions/LoginResponse"
+          404:
+            $ref: "./quizSwagger.yml#/responses/NotFound"
           400:
             $ref: "./quizSwagger.yml#/responses/BadRequest"
           500:
@@ -136,12 +138,11 @@ definitions:
 
   LoginResponse:
     type: object
-    allOf:
-      - $ref: "#/definitions/user"
-        type: object
-        properties:
-          accessToken:
-            type: string
+    properties:
+      user:
+        $ref: "#/definitions/user"
+      accessToken:
+        type: string
 
   principal:
     type: object

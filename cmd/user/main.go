@@ -57,6 +57,7 @@ func main() {
 	}
 
 	swaggerAPI.RegisterUserHandler = suser.RegisterUserHandlerFunc(userHandler.RegisterUser)
+	swaggerAPI.LoginUserHandler = suser.LoginUserHandlerFunc(userHandler.AttemptLogin)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
