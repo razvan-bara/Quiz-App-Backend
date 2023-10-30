@@ -18,6 +18,7 @@ paths:
           - users
         parameters:
           - name: body
+            required: true
             in: body
             schema:
               $ref: "#/definitions/RegisterRequest"
@@ -38,6 +39,7 @@ paths:
           - users
         parameters:
           - name: body
+            required: true
             in: body
             schema:
               $ref: "#/definitions/LoginRequest"

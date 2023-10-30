@@ -1,12 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/strfmt"
+	_ "github.com/lib/pq"
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	"github.com/razvan-bara/VUGO-API/api/user_api"
 	"github.com/razvan-bara/VUGO-API/api/user_api/suser"
+	db "github.com/razvan-bara/VUGO-API/db/sqlc"
+	"github.com/razvan-bara/VUGO-API/internal/handlers"
+	"github.com/razvan-bara/VUGO-API/internal/services"
 	"log"
 )
 
@@ -17,12 +22,15 @@ const (
 
 func main() {
 
-	//conn, err := sql.Open(dbDriver, dbSource)
-	//if err != nil {
-	//	log.Fatal("couldn't connect to db")
-	//}
-	//
-	//queries := db.NewSQLStorage(conn)
+	conn, err := sql.Open(dbDriver, dbSource)
+	if err != nil {
+		log.Fatal("couldn't connect to db")
+	}
+
+	queries := db.NewSQLStorage(conn)
+	userService := services.NewUserService(queries)
+	userHandler := handlers.NewUserHandler(userService)
+
 	swaggerSpec, err := loads.Analyzed(user_api.SwaggerJSON, "")
 	if err != nil {
 		log.Fatalln(err)
@@ -47,6 +55,8 @@ func main() {
 
 		return nil, errors.New(401, "incorrect api key auth")
 	}
+
+	swaggerAPI.RegisterUserHandler = suser.RegisterUserHandlerFunc(userHandler.RegisterUser)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)

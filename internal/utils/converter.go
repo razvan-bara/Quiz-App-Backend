@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/strfmt/conv"
 	"github.com/go-openapi/swag"
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	db "github.com/razvan-bara/VUGO-API/db/sqlc"
@@ -60,5 +61,16 @@ func ConvertAnswerModelToAnswerDTO(answer *db.Answer) *sdto.AnswerDTO {
 		QuizQuestionID: answer.QuestionID,
 		Title:          swag.String(answer.Title),
 		UUID:           strfmt.UUID(answer.UUID.String()),
+	}
+}
+
+func ConvertUserModelToUserDTO(user *db.User) *sdto.User {
+	return &sdto.User{
+		ID:        user.ID,
+		UUID:      strfmt.UUID(user.UUID.String()),
+		CreatedAt: strfmt.DateTime(user.CreatedAt),
+		Email:     conv.Email(strfmt.Email(user.Email)),
+		FirstName: swag.String(user.FirstName),
+		LastName:  swag.String(user.LastName),
 	}
 }
