@@ -1,0 +1,162 @@
+---
+info:
+  description: Endpoints for the quiz app REST API
+  title: Users microservice
+  version: 1.0.0
+produces:
+  - application/json
+consumes:
+  - application/json
+  - multipart/form-data
+schemes:
+  - http
+swagger: "2.0"
+paths:
+    /register:
+      post:
+        tags:
+          - users
+        parameters:
+          - name: body
+            in: body
+            schema:
+              $ref: "#/definitions/RegisterRequest"
+        operationId: registerUser
+        responses:
+          200:
+            description: register user
+            schema:
+              $ref: "#/definitions/user"
+          400:
+            $ref: "./quizSwagger.yml#/responses/BadRequest"
+          500:
+            $ref: "./quizSwagger.yml#/responses/InternalError"
+
+    /login:
+      post:
+        tags:
+          - users
+        parameters:
+          - name: body
+            in: body
+            schema:
+              $ref: "#/definitions/LoginRequest"
+        operationId: loginUser
+        responses:
+          200:
+            description: login user
+            schema:
+              $ref: "#/definitions/LoginResponse"
+          400:
+            $ref: "./quizSwagger.yml#/responses/BadRequest"
+          500:
+            $ref: "./quizSwagger.yml#/responses/InternalError"
+
+    /auth:
+      post:
+        tags:
+          - users
+        operationId: authoriseUsers
+        security:
+          - key: [ ]
+        responses:
+          200:
+            description: ok user
+            schema:
+              type: string
+          400:
+            $ref: "./quizSwagger.yml#/responses/BadRequest"
+          500:
+            $ref: "./quizSwagger.yml#/responses/InternalError"
+
+definitions:
+  user:
+    type: object
+    required:
+      - email
+      - firstName
+      - lastName
+    properties:
+      ID:
+        type: integer
+        format: int64
+      email:
+        type: string
+        format: email
+      firstName:
+        type: string
+        minLength: 3
+      lastName:
+        type: string
+        minLength: 3
+      UUID:
+        type: string
+        format: uuid
+        readOnly: true
+      createdAt:
+        type: string
+        format: date-time
+        readOnly: true
+
+
+  RegisterRequest:
+    type: object
+    required:
+      - email
+      - password
+      - firstName
+      - lastName
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+        minLength: 6
+      firstName:
+        type: string
+        minLength: 3
+      lastName:
+        type: string
+        minLength: 3
+
+  LoginRequest:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+
+  LoginResponse:
+    type: object
+    allOf:
+      - $ref: "#/definitions/user"
+        type: object
+        properties:
+          accessToken:
+            type: string
+
+  principal:
+    type: object
+    properties:
+      ID:
+        type: integer
+        format: int64
+      email:
+        type: string
+        format: email
+      exp:
+        type: string
+        format: date-time
+
+
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: Authorization

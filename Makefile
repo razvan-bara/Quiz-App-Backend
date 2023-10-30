@@ -10,8 +10,20 @@ quiz_db_down:
 quiz_reset_db:
 	make quiz_db_down && make quiz_db_up
 
+user_db_up:
+	migrate -path db/migrations/user -database "postgresql://db_user:db_pass@localhost:5431/users?sslmode=disable" up
+
+user_db_down:
+	migrate -path db/migrations/user -database "postgresql://db_user:db_pass@localhost:5431/users?sslmode=disable" down -all
+
+user_reset_db:
+	make user_db_down && make user_db_up
+
 gen_quiz_swagger:
 	swagger generate server -f ./api/quizSwagger.yml -t ./api --exclude-main -s quizApi -m /sdto -a /squiz --skip-tag-packages
+
+gen_user_swagger:
+	swagger generate server -f ./api/userSwagger.yml -t ./api --exclude-main -s userApi -m /sdto -a /suser --skip-tag-packages -P sdto.Principal
 
 
 test:
@@ -28,3 +40,6 @@ mockServices:
 
 run_quiz:
 	go run ./cmd/quiz/main.go
+
+run_user:
+	go run ./cmd/user/main.go

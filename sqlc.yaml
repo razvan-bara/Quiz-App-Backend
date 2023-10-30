@@ -1,7 +1,11 @@
 version: "2"
 sql:
-    - schema: "./db/migrations/quiz/"
-      queries: "./db/queries/quiz/"
+    - schema:
+        - "./db/migrations/quiz/"
+        - "./db/migrations/user/"
+      queries:
+        - "./db/queries/quiz/"
+        - "./db/queries/user/"
       engine: "postgresql"
       gen:
         go:
@@ -13,7 +17,5 @@ sql:
           emit_prepared_queries: false
           emit_interface: true
           emit_exact_table_names: false
-      database:
-          uri: "postgresql://db_user:db_pass@localhost:5432/quizes?sslmode=disable"
       rules:
           - sqlc/db-prepare
