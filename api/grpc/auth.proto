@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package gRPCAuth;
+
+option go_package = "./gapi";
+
+service AuthService {
+  rpc ValidateJWTAuthorizationHeader(Header) returns (User) {}
+}
+
+message Header {
+  string Content = 1;
+}
+
+message User {
+  uint64 Id = 1;
+  string Email = 2;
+  string UUID = 3;
+  bool isAdmin = 4;
+}

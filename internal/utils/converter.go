@@ -72,5 +72,6 @@ func ConvertUserModelToUserDTO(user *db.User) *sdto.User {
 		Email:     conv.Email(strfmt.Email(user.Email)),
 		FirstName: swag.String(user.FirstName),
 		LastName:  swag.String(user.LastName),
+		IsAdmin:   user.IsAdmin,
 	}
 }

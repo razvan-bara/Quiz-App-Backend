@@ -12,10 +12,20 @@ import (
 type IUserService interface {
 	AddUser(body *sdto.RegisterRequest) (*sdto.User, error)
 	AttemptLogin(body *sdto.LoginRequest) (*sdto.User, error)
+	FindUserByEmail(email string) (*sdto.User, error)
 }
 
 type UserService struct {
 	storage db.Storage
+}
+
+func (us UserService) FindUserByEmail(email string) (*sdto.User, error) {
+	user, err := us.storage.GetUserByEmail(context.Background(), email)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.ConvertUserModelToUserDTO(user), nil
 }
 
 func (us UserService) AttemptLogin(loginBody *sdto.LoginRequest) (*sdto.User, error) {

@@ -20,7 +20,7 @@ user_reset_db:
 	make user_db_down && make user_db_up
 
 gen_quiz_swagger:
-	swagger generate server -f ./api/quizSwagger.yml -t ./api --exclude-main -s quizApi -m /sdto -a /squiz --skip-tag-packages
+	swagger generate server -f ./api/quizSwagger.yml -t ./api --exclude-main -s quizApi -m /sdto -a /squiz --skip-tag-packages -P sdto.Principal
 
 gen_user_swagger:
 	swagger generate server -f ./api/userSwagger.yml -t ./api --exclude-main -s userApi -m /sdto -a /suser --skip-tag-packages -P sdto.Principal
@@ -43,3 +43,11 @@ run_quiz:
 
 run_user:
 	go run ./cmd/user/main.go
+
+run_all:
+	make run_user & make run_quiz
+
+generate_auth_proto:
+	protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    ./api/grpc/auth.proto

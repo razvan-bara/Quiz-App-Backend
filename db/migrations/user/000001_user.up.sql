@@ -5,6 +5,7 @@ CREATE TABLE "users" (
                          "firstName" varchar(255) NOT NULL,
                          "lastName" varchar(255) NOT NULL,
                          "password" text NOT NULL,
+                         "isAdmin" bool NOT NULL default(false),
                          "UUID" uuid UNIQUE NOT NULL DEFAULT (uuid_generate_v4()),
                          "createdAt" timestamp NOT NULL DEFAULT (now())
 );

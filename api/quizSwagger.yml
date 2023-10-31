@@ -25,7 +25,8 @@ paths:
                         type: array
                         items:
                             $ref: "#/definitions/quizDTO"
-
+                401:
+                    $ref: "#/responses/Unauthorized"
                 500:
                     $ref: "#/responses/InternalError"
         post:
@@ -42,7 +43,8 @@ paths:
                     description: create quiz
                     schema:
                         $ref: "#/definitions/quizForm"
-
+                401:
+                    $ref: "#/responses/Unauthorized"
                 500:
                     $ref: "#/responses/InternalError"
 
@@ -66,7 +68,8 @@ paths:
                             $ref: "#/definitions/quizForm"
                     404:
                         $ref: "#/responses/NotFound"
-
+                    401:
+                        $ref: "#/responses/Unauthorized"
                     500:
                         $ref: "#/responses/InternalError"
 
@@ -86,6 +89,8 @@ paths:
                             $ref: "#/definitions/quizForm"
                     404:
                         $ref: "#/responses/NotFound"
+                    401:
+                        $ref: "#/responses/Unauthorized"
                     500:
                         $ref: "#/responses/InternalError"
             delete:
@@ -97,6 +102,8 @@ paths:
                         description: Deleted
                     404:
                         $ref: "#/responses/NotFound"
+                    401:
+                        $ref: "#/responses/Unauthorized"
                     500:
                         $ref: "#/responses/InternalError"
 
@@ -117,6 +124,8 @@ paths:
                     description: Deleted question
                 404:
                     $ref: "#/responses/NotFound"
+                401:
+                    $ref: "#/responses/Unauthorized"
                 500:
                     $ref: "#/responses/InternalError"
 
@@ -137,6 +146,8 @@ paths:
                     description: Deleted answer
                 404:
                     $ref: "#/responses/NotFound"
+                401:
+                    $ref: "#/responses/Unauthorized"
                 500:
                     $ref: "#/responses/InternalError"
 
@@ -218,6 +229,9 @@ definitions:
                 type: string
                 format: date-time
 
+    principal:
+        $ref: "./userSwagger.yml#/definitions/principal"
+
     answerDTO:
         type: object
         required:
@@ -278,3 +292,12 @@ responses:
         description: Internal server error
         schema:
             $ref: "#/definitions/error"
+
+security:
+    - key: [ ]
+
+securityDefinitions:
+    key:
+        type: apiKey
+        in: header
+        name: Authorization

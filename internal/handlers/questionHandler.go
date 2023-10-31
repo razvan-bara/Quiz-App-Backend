@@ -17,7 +17,15 @@ func NewQuestionHandler(questionHandler services.IQuestionService) *QuestionHand
 	return &QuestionHandler{questionHandler: questionHandler}
 }
 
-func (handler QuestionHandler) DeleteQuestion(params squiz.DeleteQuestionParams) middleware.Responder {
+func (handler QuestionHandler) DeleteQuestion(params squiz.DeleteQuestionParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewDeleteQuestionUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
+
 	err := handler.questionHandler.DeleteQuestion(params.ID)
 	if err != nil {
 		return squiz.NewDeleteQuestionNotFound().WithPayload(&sdto.Error{

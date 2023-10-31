@@ -17,7 +17,15 @@ func NewQuizHandler(quizService services.IQuizService) *QuizHandler {
 	return &QuizHandler{quizService: quizService}
 }
 
-func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams) middleware.Responder {
+func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewAddQuizUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
+
 	quiz := req.Body
 
 	res, err := handler.quizService.ProcessNewQuiz(quiz)
@@ -31,7 +39,15 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams) middleware.R
 	return squiz.NewAddQuizCreated().WithPayload(res)
 }
 
-func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams) middleware.Responder {
+func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewListQuizzesUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
+
 	quizzes, err := handler.quizService.ListQuizzes()
 	if err != nil {
 		return squiz.NewListQuizzesInternalServerError().WithPayload(&sdto.Error{
@@ -43,7 +59,14 @@ func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams) m
 	return squiz.NewListQuizzesOK().WithPayload(quizzes)
 }
 
-func (handler *QuizHandler) GetQuiz(params squiz.GetQuizParams) middleware.Responder {
+func (handler *QuizHandler) GetQuiz(params squiz.GetQuizParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewGetQuizUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
 
 	quiz, err := handler.quizService.GetCompleteQuiz(params.ID)
 	if err != nil {
@@ -56,7 +79,14 @@ func (handler *QuizHandler) GetQuiz(params squiz.GetQuizParams) middleware.Respo
 	return squiz.NewGetQuizOK().WithPayload(quiz)
 }
 
-func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams) middleware.Responder {
+func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewUpdateQuizUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
 
 	quiz, err := handler.quizService.UpdateCompleteQuiz(params.ID, params.Body)
 	if err != nil {
@@ -69,7 +99,15 @@ func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams) middleware
 	return squiz.NewUpdateQuizOK().WithPayload(quiz)
 }
 
-func (handler *QuizHandler) DeleteQuiz(params squiz.DeleteQuizParams) middleware.Responder {
+func (handler *QuizHandler) DeleteQuiz(params squiz.DeleteQuizParams, principal *sdto.Principal) middleware.Responder {
+
+	if !principal.IsAdmin {
+		return squiz.NewDeleteQuizUnauthorized().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusUnauthorized),
+			Message: swag.String("unauthorised"),
+		})
+	}
+
 	err := handler.quizService.DeleteQuiz(params.ID)
 	if err != nil {
 		return squiz.NewDeleteQuestionNotFound().WithPayload(&sdto.Error{
