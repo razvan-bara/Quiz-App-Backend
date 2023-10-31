@@ -65,12 +65,12 @@ func main() {
 	swaggerAPI.RegisterUserHandler = suser.RegisterUserHandlerFunc(userHandler.RegisterUser)
 	swaggerAPI.LoginUserHandler = suser.LoginUserHandlerFunc(userHandler.AttemptLogin)
 
-	servers.LoadAuthGRPCServer(authService)
 	go func() {
 		if err := server.Serve(); err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 	}()
+	servers.LoadAuthGRPCServer(authService)
 
 	select {}
 }
