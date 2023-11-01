@@ -39,10 +39,10 @@ mockServices:
 	mockgen -destination ./internal/services/mock/services.go --build_flags=--mod=mod -package mockService github.com/razvan-bara/VUGO-API/internal/services IQuizService,IQuestionService,IAnswerService
 
 run_quiz:
-	go run ./cmd/quiz/main.go
+	rm quiz && go build -o quiz ./cmd/quiz/main.go && ./quiz
 
 run_user:
-	go run ./cmd/user/main.go
+	rm user && go build -o user ./cmd/user/main.go && ./user
 
 run_all:
 	make run_user & make run_quiz

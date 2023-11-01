@@ -49,7 +49,6 @@ func main() {
 	defer server.Shutdown()
 	server.EnabledListeners = []string{"http"}
 	server.Port = 3000
-
 	swaggerAPI.KeyAuth = func(s string) (*sdto.Principal, error) {
 
 		opts := []grpc.DialOption{grpc.WithInsecure()}
@@ -91,6 +90,7 @@ func main() {
 	swaggerAPI.UpdateAttemptHandler = squiz.UpdateAttemptHandlerFunc(attemptHandler.UpdateAttempt)
 	swaggerAPI.AddAttemptAnswerHandler = squiz.AddAttemptAnswerHandlerFunc(attemptHandler.AddAttemptAnswer)
 	swaggerAPI.GetAttemptHandler = squiz.GetAttemptHandlerFunc(attemptHandler.GetAttempt)
+	server.ConfigureAPI()
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
