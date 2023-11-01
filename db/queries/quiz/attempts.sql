@@ -1,3 +1,7 @@
+-- name: GetAttempt :one
+SELECT * FROM attempts
+WHERE id = $1 LIMIT 1;
+
 -- name: CreateAttempt :one
 INSERT INTO attempts (
     quiz_id, user_id

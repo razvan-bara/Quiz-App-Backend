@@ -9,12 +9,18 @@ import (
 	"github.com/razvan-bara/VUGO-API/api/quiz_api/squiz"
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	db "github.com/razvan-bara/VUGO-API/db/sqlc"
+	"github.com/razvan-bara/VUGO-API/internal/services"
 	"github.com/razvan-bara/VUGO-API/internal/utils"
 	"net/http"
 )
 
 type AttemptHandler struct {
-	storage db.Storage
+	storage     db.Storage
+	quizService services.IQuizService
+}
+
+func NewAttemptHandler(storage db.Storage, quizService services.IQuizService) *AttemptHandler {
+	return &AttemptHandler{storage: storage, quizService: quizService}
 }
 
 func (handler AttemptHandler) AddAttempt(params squiz.AddAttemptParams, principal *sdto.Principal) middleware.Responder {
@@ -111,6 +117,36 @@ func (handler AttemptHandler) UpdateAttempt(params squiz.UpdateAttemptParams, pr
 	return squiz.NewUpdateAttemptOK().WithPayload(attemptDTO)
 }
 
-func NewAttemptHandler(storage db.Storage) *AttemptHandler {
-	return &AttemptHandler{storage: storage}
+func (handler AttemptHandler) GetAttempt(params squiz.GetAttemptParams, principal *sdto.Principal) middleware.Responder {
+
+	attempt, err := handler.storage.GetAttempt(context.Background(), params.AttemptID)
+	if err != nil || attempt.UserID != principal.ID || attempt.QuizID != params.QuizID {
+		return squiz.NewGetAttemptBadRequest().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusBadRequest),
+			Message: swag.String("not a valid attempt request"),
+		})
+	}
+
+	quizForm, err := handler.quizService.GetCompleteQuiz(params.QuizID)
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			return squiz.NewGetAttemptBadRequest().WithPayload(&sdto.Error{
+				Code:    swag.Int64(http.StatusBadRequest),
+				Message: swag.String("couldn't find specified quiz"),
+			})
+		}
+
+		return squiz.NewGetAttemptInternalServerError().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusInternalServerError),
+			Message: swag.String("error while getting attempt"),
+		})
+	}
+
+	attemptWithQuiz := &sdto.AttemptWithQuizDTO{
+		AttemptDTO: utils.ConvertAttemptModelToAttemptDTO(attempt),
+		QuizForm:   quizForm,
+	}
+
+	return squiz.NewGetAttemptOK().WithPayload(attemptWithQuiz)
 }

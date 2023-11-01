@@ -194,6 +194,19 @@ paths:
               description: attemptId
               format: int64
               required: true
+        get:
+            tags:
+                - attempt
+            operationId: getAttempt
+            responses:
+                200:
+                    description: update attempt
+                    schema:
+                        $ref: "#/definitions/attemptWithQuizDTO"
+                400:
+                    $ref: "#/responses/BadRequest"
+                500:
+                    $ref: "#/responses/InternalError"
         put:
             tags:
                 - attempt
@@ -413,6 +426,16 @@ definitions:
                 type: string
                 format: date-time
                 x-nullable: false
+
+    attemptWithQuizDTO:
+        type: object
+        allOf:
+            - properties:
+                attemptDTO:
+                    $ref: "#/definitions/attemptDTO"
+
+                quizForm:
+                    $ref: "#/definitions/quizForm"
 
     error:
         type: object
