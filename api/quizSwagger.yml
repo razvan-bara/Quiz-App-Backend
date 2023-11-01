@@ -199,7 +199,7 @@ paths:
                 - attempt
             operationId: addAttemptAnswer
             parameters:
-                - name: body
+                - name: attemptAnswerDTO
                   in: body
                   schema:
                       $ref: "#/definitions/attemptAnswerDTO"

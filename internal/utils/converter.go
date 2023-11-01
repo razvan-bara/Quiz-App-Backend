@@ -87,3 +87,14 @@ func ConvertUserModelToUserDTO(user *db.User) *sdto.User {
 		IsAdmin:   user.IsAdmin,
 	}
 }
+
+func ConvertAttemptAnswerModelToAttemptAnswerDTO(answer *db.AttemptAnswer) *sdto.AttemptAnswerDTO {
+	return &sdto.AttemptAnswerDTO{
+		ID:         answer.ID,
+		UUID:       strfmt.UUID(answer.UUID.String()),
+		AnswerID:   answer.AnswerID,
+		AttemptID:  answer.AttemptID,
+		CreatedAt:  strfmt.DateTime(answer.CreatedAt),
+		QuestionID: answer.QuestionID,
+	}
+}

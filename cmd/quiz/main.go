@@ -88,6 +88,7 @@ func main() {
 	swaggerAPI.DeleteAnswerHandler = squiz.DeleteAnswerHandlerFunc(answerHandler.DeleteAnswer)
 
 	swaggerAPI.AddAttemptHandler = squiz.AddAttemptHandlerFunc(attemptHandler.AddAttempt)
+	swaggerAPI.AddAttemptAnswerHandler = squiz.AddAttemptAnswerHandlerFunc(attemptHandler.AddAttemptAnswer)
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
