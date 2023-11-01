@@ -2,6 +2,10 @@
 SELECT * FROM answers
 WHERE id = $1 LIMIT 1;
 
+-- name: GetAnswerByIdAndQuestionId :one
+SELECT * FROM answers
+WHERE id = $1 AND  question_id = $2 LIMIT 1;
+
 -- name: ListAnswersForQuestion :many
 SELECT * FROM answers
 WHERE question_id = $1
