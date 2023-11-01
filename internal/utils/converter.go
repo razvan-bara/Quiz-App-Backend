@@ -64,6 +64,18 @@ func ConvertAnswerModelToAnswerDTO(answer *db.Answer) *sdto.AnswerDTO {
 	}
 }
 
+func ConvertAttemptModelToAttemptDTO(attempt *db.Attempt) *sdto.AttemptDTO {
+	return &sdto.AttemptDTO{
+		ID:        attempt.ID,
+		UUID:      strfmt.UUID(attempt.UUID.String()),
+		CreatedAt: strfmt.DateTime(attempt.CreatedAt),
+		QuizID:    attempt.QuizID,
+		Score:     int32(attempt.Score),
+		Status:    int32(attempt.Status),
+		UserID:    attempt.UserID,
+	}
+}
+
 func ConvertUserModelToUserDTO(user *db.User) *sdto.User {
 	return &sdto.User{
 		ID:        user.ID,
