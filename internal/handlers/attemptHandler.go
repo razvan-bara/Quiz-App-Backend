@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/razvan-bara/VUGO-API/api/quiz_api/squiz"
@@ -79,6 +81,34 @@ func (handler AttemptHandler) AddAttemptAnswer(params squiz.AddAttemptAnswerPara
 
 	answerDTO = utils.ConvertAttemptAnswerModelToAttemptAnswerDTO(answer)
 	return squiz.NewAddAttemptAnswerCreated().WithPayload(answerDTO)
+}
+
+func (handler AttemptHandler) UpdateAttempt(params squiz.UpdateAttemptParams, principal *sdto.Principal) middleware.Responder {
+	attemptDTO := params.AttemptDTO
+	args := &db.UpdateAttemptParams{
+		ID:     params.AttemptID,
+		Score:  int16(attemptDTO.Score),
+		Status: int16(attemptDTO.Status),
+	}
+
+	attempt, err := handler.storage.UpdateAttempt(context.Background(), args)
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			return squiz.NewUpdateAttemptBadRequest().WithPayload(&sdto.Error{
+				Code:    swag.Int64(http.StatusInternalServerError),
+				Message: swag.String("specified attempt doesn't exist"),
+			})
+		}
+
+		return squiz.NewUpdateAttemptInternalServerError().WithPayload(&sdto.Error{
+			Code:    swag.Int64(http.StatusInternalServerError),
+			Message: swag.String("couldn't update attempt"),
+		})
+	}
+
+	attemptDTO = utils.ConvertAttemptModelToAttemptDTO(attempt)
+	return squiz.NewUpdateAttemptOK().WithPayload(attemptDTO)
 }
 
 func NewAttemptHandler(storage db.Storage) *AttemptHandler {

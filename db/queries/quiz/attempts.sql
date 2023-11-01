@@ -13,3 +13,9 @@ INSERT INTO attempt_answers (
              $1, $2, $3
          )
 RETURNING *;
+
+-- name: UpdateAttempt :one
+UPDATE attempts
+set score = $2, status = $3
+WHERE id = $1
+RETURNING *;
