@@ -28,7 +28,7 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams, principal *s
 
 	quiz := req.Body
 
-	res, err := handler.quizService.ProcessNewQuiz(quiz)
+	res, err := handler.quizService.ProcessNewQuiz(quiz, req.SaveMode)
 	if err != nil {
 		return squiz.NewAddQuizInternalServerError().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusInternalServerError),
@@ -41,7 +41,7 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams, principal *s
 
 func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams, principal *sdto.Principal) middleware.Responder {
 
-	quizzes, err := handler.quizService.ListQuizzes()
+	quizzes, err := handler.quizService.ListQuizzes(params.Status)
 	if err != nil {
 		return squiz.NewListQuizzesInternalServerError().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusInternalServerError),
@@ -73,8 +73,7 @@ func (handler *QuizHandler) UpdateQuiz(params squiz.UpdateQuizParams, principal 
 			Message: swag.String("unauthorised"),
 		})
 	}
-
-	quiz, err := handler.quizService.UpdateCompleteQuiz(params.ID, params.Body)
+	quiz, err := handler.quizService.UpdateCompleteQuiz(params.ID, params.Body, params.SaveMode)
 	if err != nil {
 		return squiz.NewGetQuizNotFound().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusNotFound),

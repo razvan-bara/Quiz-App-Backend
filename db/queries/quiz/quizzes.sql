@@ -4,20 +4,31 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListQuizzes :many
 SELECT * FROM quizzes
-ORDER BY title;
+ORDER BY "createdAt" DESC;
+
+-- name: ListDraftQuizzes :many
+SELECT * FROM quizzes
+where "publishedAt" is null
+ORDER BY "createdAt" DESC;
+
+-- name: ListPublishedQuizzes :many
+SELECT * FROM quizzes
+where "publishedAt" is not null
+ORDER BY "createdAt" DESC;
 
 -- name: CreateQuiz :one
 INSERT INTO quizzes (
-    title, description
+    title, description, "publishedAt"
 ) VALUES (
-             $1, $2
+             $1, $2, $3
          )
 RETURNING *;
 
 -- name: UpdateQuiz :one
 UPDATE quizzes
 set title = $2,
-    description = $3
+    description = $3,
+    "publishedAt" = $4
 WHERE id = $1
 RETURNING *;
 

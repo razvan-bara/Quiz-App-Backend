@@ -19,8 +19,10 @@ func GenerateQuizResponse(quiz *db.Quiz, numOfQuestions int) *sdto.QuizForm {
 func ConvertQuizModelToQuizDTO(quiz *db.Quiz) *sdto.QuizDTO {
 	return &sdto.QuizDTO{
 		ID:          quiz.ID,
+		Attempts:    quiz.Attempts.Int32,
 		CreatedAt:   strfmt.DateTime(quiz.CreatedAt),
 		Description: quiz.Description.String,
+		PublishedAt: strfmt.DateTime(quiz.PublishedAt.Time),
 		Title:       swag.String(quiz.Title),
 		UUID:        strfmt.UUID(quiz.UUID.String()),
 	}

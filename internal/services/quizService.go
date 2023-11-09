@@ -7,16 +7,17 @@ import (
 	"github.com/razvan-bara/VUGO-API/api/sdto"
 	db "github.com/razvan-bara/VUGO-API/db/sqlc"
 	"github.com/razvan-bara/VUGO-API/internal/utils"
+	"time"
 )
 
 type IQuizService interface {
-	ListQuizzes() ([]*sdto.QuizDTO, error)
+	ListQuizzes(status string) ([]*sdto.QuizDTO, error)
 	FindQuizById(id int64) (*db.Quiz, error)
 	GetCompleteQuiz(id int64) (*sdto.QuizForm, error)
-	ProcessNewQuiz(quiz *sdto.QuizForm) (*sdto.QuizForm, error)
-	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error)
-	UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm) (*sdto.QuizForm, error)
-	UpdateQuiz(quizID int64, quiz *sdto.QuizDTO) (*sdto.QuizDTO, error)
+	ProcessNewQuiz(quiz *sdto.QuizForm, saveMode string) (*sdto.QuizForm, error)
+	SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO, saveMode string) (*db.Quiz, error)
+	UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm, saveMode string) (*sdto.QuizForm, error)
+	UpdateQuiz(quizID int64, quiz *sdto.QuizDTO, saveMode string) (*sdto.QuizDTO, error)
 	DeleteQuiz(quizID int64) error
 }
 
@@ -34,8 +35,19 @@ func NewQuizService(storage db.Storage, questionService IQuestionService, answer
 	return &QuizService{storage: storage, questionService: questionService, answerService: answerService}
 }
 
-func (qs *QuizService) ListQuizzes() ([]*sdto.QuizDTO, error) {
-	quizzes, err := qs.storage.ListQuizzes(context.Background())
+func (qs *QuizService) ListQuizzes(status string) ([]*sdto.QuizDTO, error) {
+	var quizzes []*db.Quiz
+	var err error
+
+	switch status {
+	case "all":
+		quizzes, err = qs.storage.ListQuizzes(context.Background())
+	case "draft":
+		quizzes, err = qs.storage.ListDraftQuizzes(context.Background())
+	case "published":
+		quizzes, err = qs.storage.ListPublishedQuizzes(context.Background())
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -88,10 +100,10 @@ func (qs *QuizService) FindQuizById(id int64) (*db.Quiz, error) {
 	return qs.storage.GetQuiz(context.Background(), id)
 }
 
-func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, error) {
+func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm, saveMode string) (*sdto.QuizForm, error) {
 
 	ctx := context.Background()
-	quiz, err := qs.SaveQuiz(ctx, &quizForm.QuizDTO)
+	quiz, err := qs.SaveQuiz(ctx, &quizForm.QuizDTO, saveMode)
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +131,9 @@ func (qs *QuizService) ProcessNewQuiz(quizForm *sdto.QuizForm) (*sdto.QuizForm, 
 	return res, nil
 }
 
-func (qs *QuizService) UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm) (*sdto.QuizForm, error) {
+func (qs *QuizService) UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm, saveMode string) (*sdto.QuizForm, error) {
 
-	quiz, err := qs.UpdateQuiz(quizID, &quizForm.QuizDTO)
+	quiz, err := qs.UpdateQuiz(quizID, &quizForm.QuizDTO, saveMode)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +174,7 @@ func (qs *QuizService) UpdateCompleteQuiz(quizID int64, quizForm *sdto.QuizForm)
 	return quizForm, nil
 }
 
-func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Quiz, error) {
+func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO, saveMode string) (*db.Quiz, error) {
 
 	quizArgs := &db.CreateQuizParams{
 		Title: swag.StringValue(quiz.Title),
@@ -170,6 +182,13 @@ func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Qu
 			String: quiz.Description,
 			Valid:  false,
 		},
+	}
+
+	if saveMode == "publish" && quiz.PublishedAt.IsZero() {
+		quizArgs.PublishedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
 	}
 
 	if quiz.Description != "" {
@@ -184,7 +203,7 @@ func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO) (*db.Qu
 	return savedQuiz, nil
 }
 
-func (qs *QuizService) UpdateQuiz(quizID int64, quiz *sdto.QuizDTO) (*sdto.QuizDTO, error) {
+func (qs *QuizService) UpdateQuiz(quizID int64, quiz *sdto.QuizDTO, saveMode string) (*sdto.QuizDTO, error) {
 
 	args := &db.UpdateQuizParams{
 		ID:    quizID,
@@ -193,6 +212,20 @@ func (qs *QuizService) UpdateQuiz(quizID int64, quiz *sdto.QuizDTO) (*sdto.QuizD
 			String: quiz.Description,
 			Valid:  false,
 		},
+	}
+
+	if saveMode == "publish" && quiz.PublishedAt.IsZero() {
+		args.PublishedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
+	}
+
+	if saveMode == "draft" && !quiz.PublishedAt.IsZero() {
+		args.PublishedAt = sql.NullTime{
+			Time:  time.Time{},
+			Valid: false,
+		}
 	}
 
 	if args.Description.String != "" {
