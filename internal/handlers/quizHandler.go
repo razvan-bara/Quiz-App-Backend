@@ -41,7 +41,7 @@ func (handler *QuizHandler) ProcessNewQuiz(req squiz.AddQuizParams, principal *s
 
 func (handler *QuizHandler) ListQuizzesHandler(params squiz.ListQuizzesParams, principal *sdto.Principal) middleware.Responder {
 
-	quizzes, err := handler.quizService.ListQuizzes(params.Status)
+	quizzes, err := handler.quizService.ListQuizzes(params.Status, params.Page, params.Search)
 	if err != nil {
 		return squiz.NewListQuizzesInternalServerError().WithPayload(&sdto.Error{
 			Code:    swag.Int64(http.StatusInternalServerError),

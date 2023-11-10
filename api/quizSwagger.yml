@@ -24,6 +24,15 @@ paths:
                   type: string
                   required: true
                   default: "all"
+                - name: page
+                  in: query
+                  type: number
+                  format: int32
+                  required: false
+                - name: search
+                  in: query
+                  type: string
+                  required: false
             responses:
                 200:
                     description: list the available quizzes

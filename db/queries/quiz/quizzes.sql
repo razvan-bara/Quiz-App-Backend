@@ -11,6 +11,11 @@ SELECT * FROM quizzes
 where "publishedAt" is null
 ORDER BY "createdAt" DESC;
 
+-- name: ListPublishedQuizzesByTitlePaginate :many
+SELECT * FROM quizzes
+where "publishedAt" is not null and position(lower($1) in lower(title))>0
+ORDER BY "createdAt" DESC LIMIT 8 OFFSET $2 * 8;
+
 -- name: ListPublishedQuizzes :many
 SELECT * FROM quizzes
 where "publishedAt" is not null

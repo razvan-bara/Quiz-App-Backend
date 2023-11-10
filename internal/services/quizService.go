@@ -11,7 +11,7 @@ import (
 )
 
 type IQuizService interface {
-	ListQuizzes(status string) ([]*sdto.QuizDTO, error)
+	ListQuizzes(status string, page *int32, search *string) ([]*sdto.QuizDTO, error)
 	FindQuizById(id int64) (*db.Quiz, error)
 	GetCompleteQuiz(id int64) (*sdto.QuizForm, error)
 	ProcessNewQuiz(quiz *sdto.QuizForm, saveMode string) (*sdto.QuizForm, error)
@@ -35,17 +35,28 @@ func NewQuizService(storage db.Storage, questionService IQuestionService, answer
 	return &QuizService{storage: storage, questionService: questionService, answerService: answerService}
 }
 
-func (qs *QuizService) ListQuizzes(status string) ([]*sdto.QuizDTO, error) {
+func (qs *QuizService) ListQuizzes(status string, page *int32, search *string) ([]*sdto.QuizDTO, error) {
 	var quizzes []*db.Quiz
 	var err error
 
-	switch status {
-	case "all":
-		quizzes, err = qs.storage.ListQuizzes(context.Background())
-	case "draft":
-		quizzes, err = qs.storage.ListDraftQuizzes(context.Background())
-	case "published":
-		quizzes, err = qs.storage.ListPublishedQuizzes(context.Background())
+	if page != nil {
+		args := &db.ListPublishedQuizzesByTitlePaginateParams{
+			Lower:   "",
+			Column2: swag.Int32Value(page),
+		}
+		if search != nil {
+			args.Lower = swag.StringValue(search)
+		}
+		quizzes, err = qs.storage.ListPublishedQuizzesByTitlePaginate(context.Background(), args)
+	} else {
+		switch status {
+		case "all":
+			quizzes, err = qs.storage.ListQuizzes(context.Background())
+		case "draft":
+			quizzes, err = qs.storage.ListDraftQuizzes(context.Background())
+		case "published":
+			quizzes, err = qs.storage.ListPublishedQuizzes(context.Background())
+		}
 	}
 
 	if err != nil {
