@@ -143,10 +143,60 @@ func (handler AttemptHandler) GetAttempt(params squiz.GetAttemptParams, principa
 		})
 	}
 
-	attemptWithQuiz := &sdto.AttemptWithQuizDTO{
+	attemptWithQuiz := &sdto.AttemptWithQuizFormDTO{
 		AttemptDTO: utils.ConvertAttemptModelToAttemptDTO(attempt),
 		QuizForm:   quizForm,
 	}
 
 	return squiz.NewGetAttemptOK().WithPayload(attemptWithQuiz)
+}
+
+func (handler AttemptHandler) ListUserAttempts(params squiz.ListUserAttemptsParams, principal *sdto.Principal) middleware.Responder {
+
+	var attemptsWithQuizDTO []*sdto.AttemptWithQuizDTO
+
+	switch params.AttemptStatus {
+	case nil:
+		result, err := handler.storage.ListAttemptsForUser(context.Background(), principal.ID)
+		if err != nil {
+			return squiz.NewListUserAttemptsInternalServerError().WithPayload(&sdto.Error{
+				Code:    swag.Int64(http.StatusInternalServerError),
+				Message: swag.String("error while getting attempts for user"),
+			})
+		}
+		for _, row := range result {
+			attemptsWithQuizDTO = append(attemptsWithQuizDTO, &sdto.AttemptWithQuizDTO{
+				AttemptDTO: utils.ConvertAttemptModelToAttemptDTO(&row.Attempt),
+				QuizDTO:    utils.ConvertQuizModelToQuizDTO(&row.Quiz),
+			})
+		}
+	default:
+
+		arg := &db.ListAttemptsForUserWhereStatusParams{
+			UserID: principal.ID,
+			Status: *params.AttemptStatus,
+		}
+
+		result, err := handler.storage.ListAttemptsForUserWhereStatus(
+			context.Background(),
+			arg,
+		)
+
+		for _, row := range result {
+			attemptsWithQuizDTO = append(attemptsWithQuizDTO, &sdto.AttemptWithQuizDTO{
+				AttemptDTO: utils.ConvertAttemptModelToAttemptDTO(&row.Attempt),
+				QuizDTO:    utils.ConvertQuizModelToQuizDTO(&row.Quiz),
+			})
+		}
+
+		if err != nil {
+			return squiz.NewListUserAttemptsInternalServerError().WithPayload(&sdto.Error{
+				Code:    swag.Int64(http.StatusInternalServerError),
+				Message: swag.String("error while getting attempts for user"),
+			})
+		}
+
+	}
+
+	return squiz.NewListUserAttemptsOK().WithPayload(attemptsWithQuizDTO)
 }

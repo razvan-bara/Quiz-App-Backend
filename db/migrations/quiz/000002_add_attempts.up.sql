@@ -29,6 +29,6 @@ ALTER TABLE "attempts" ADD FOREIGN KEY ("quiz_id") REFERENCES "quizzes" ("id") O
 
 ALTER TABLE "attempt_answers" ADD FOREIGN KEY ("attempt_id") REFERENCES "attempts" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "attempt_answers" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
+ALTER TABLE "attempt_answers" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "attempt_answers" ADD FOREIGN KEY ("answer_id") REFERENCES "answers" ("id");
+ALTER TABLE "attempt_answers" ADD FOREIGN KEY ("answer_id") REFERENCES "answers" ("id") ON DELETE CASCADE ;

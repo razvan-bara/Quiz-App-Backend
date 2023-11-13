@@ -2,6 +2,21 @@
 SELECT * FROM attempts
 WHERE id = $1 LIMIT 1;
 
+-- name: ListAttemptsForUser :many
+SELECT sqlc.embed(attempts), sqlc.embed(quizzes)
+FROM attempts
+         INNER JOIN quizzes ON attempts.quiz_id = quizzes.id
+WHERE user_id = $1
+ORDER BY attempts."createdAt" DESC;
+
+-- name: ListAttemptsForUserWhereStatus :many
+SELECT sqlc.embed(attempts), sqlc.embed(quizzes)
+FROM attempts
+         INNER JOIN quizzes ON attempts.quiz_id = quizzes.id
+WHERE user_id = $1 AND status = $2
+ORDER BY attempts."createdAt" DESC;
+
+
 -- name: CreateAttempt :one
 INSERT INTO attempts (
     quiz_id, user_id
