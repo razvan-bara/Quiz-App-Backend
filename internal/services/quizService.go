@@ -195,7 +195,7 @@ func (qs *QuizService) SaveQuiz(ctx context.Context, quiz *sdto.QuizDTO, saveMod
 		},
 	}
 
-	if saveMode == "publish" && quiz.PublishedAt.IsZero() {
+	if saveMode == "publish" && (quiz.PublishedAt.IsZero() || quiz.PublishedAt.IsUnixZero()) {
 		quizArgs.PublishedAt = sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,

@@ -90,6 +90,7 @@ func main() {
 	swaggerAPI.UpdateAttemptHandler = squiz.UpdateAttemptHandlerFunc(attemptHandler.UpdateAttempt)
 	swaggerAPI.AddAttemptAnswerHandler = squiz.AddAttemptAnswerHandlerFunc(attemptHandler.AddAttemptAnswer)
 	swaggerAPI.GetAttemptHandler = squiz.GetAttemptHandlerFunc(attemptHandler.GetAttempt)
+	swaggerAPI.ListUserAttemptsHandler = squiz.ListUserAttemptsHandlerFunc(attemptHandler.ListUserAttempts)
 	server.ConfigureAPI()
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
