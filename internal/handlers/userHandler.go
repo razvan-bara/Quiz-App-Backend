@@ -71,6 +71,15 @@ func (handler UserHandler) AttemptLogin(params suser.LoginUserParams) middleware
 	})
 }
 
+func (handler UserHandler) GetUserDetails(params suser.GetUserDetailsParams, principal *sdto.Principal) middleware.Responder {
+	user, err := handler.userService.FindUserByEmail(string(principal.Email))
+	if err != nil {
+		return suser.NewGetUserDetailsInternalServerError()
+	}
+
+	return suser.NewGetUserDetailsOK().WithPayload(user)
+}
+
 func NewUserHandler(userService services.IUserService) *UserHandler {
 	return &UserHandler{userService: userService}
 }

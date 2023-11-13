@@ -64,6 +64,7 @@ func main() {
 	}
 	swaggerAPI.RegisterUserHandler = suser.RegisterUserHandlerFunc(userHandler.RegisterUser)
 	swaggerAPI.LoginUserHandler = suser.LoginUserHandlerFunc(userHandler.AttemptLogin)
+	swaggerAPI.GetUserDetailsHandler = suser.GetUserDetailsHandlerFunc(userHandler.GetUserDetails)
 
 	server.ConfigureAPI()
 	go func() {

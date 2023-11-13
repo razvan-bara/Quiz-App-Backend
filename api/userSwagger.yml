@@ -56,18 +56,19 @@ paths:
           500:
             $ref: "./quizSwagger.yml#/responses/InternalError"
 
-    /auth:
-      post:
+    /profile:
+      get:
         tags:
           - users
-        operationId: authoriseUsers
+        operationId: getUserDetails
         security:
           - key: [ ]
         responses:
           200:
             description: ok user
             schema:
-              type: string
+              type: object
+              $ref: "#/definitions/user"
           400:
             $ref: "./quizSwagger.yml#/responses/BadRequest"
           500:
