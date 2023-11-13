@@ -66,6 +66,15 @@ func ConvertAnswerModelToAnswerDTO(answer *db.Answer) *sdto.AnswerDTO {
 	}
 }
 
+func ConvertAttemptsModelToAttemptsDTO(attempts []*db.Attempt) []*sdto.AttemptDTO {
+	a := make([]*sdto.AttemptDTO, len(attempts))
+	for i := 0; i < len(attempts); i++ {
+		a[i] = ConvertAttemptModelToAttemptDTO(attempts[i])
+	}
+
+	return a
+}
+
 func ConvertAttemptModelToAttemptDTO(attempt *db.Attempt) *sdto.AttemptDTO {
 	return &sdto.AttemptDTO{
 		ID:        attempt.ID,

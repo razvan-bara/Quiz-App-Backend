@@ -227,7 +227,7 @@ paths:
                 200:
                     description: update attempt
                     schema:
-                        $ref: "#/definitions/attemptWithQuizDTO"
+                        $ref: "#/definitions/attemptWithQuizFormDTO"
                 400:
                     $ref: "#/responses/BadRequest"
                 500:
@@ -287,6 +287,33 @@ paths:
                     $ref: "#/responses/Unauthorized"
                 500:
                     $ref: "#/responses/InternalError"
+
+    /attempts:
+        get:
+            tags:
+                - attempts
+            operationId: listUserAttempts
+            parameters:
+                - type: integer
+                  name: attemptStatus
+                  in: query
+                  description: quizId
+                  format: int16
+                  required: false
+            responses:
+                200:
+                    description: list the attempts for the authenticated user
+                    schema:
+                        type: array
+                        items:
+                            type: object
+                            $ref: "#/definitions/attemptWithQuizDTO"
+                401:
+                    $ref: "#/responses/Unauthorized"
+                500:
+                    $ref: "#/responses/InternalError"
+
+
 
 
 definitions:
@@ -454,7 +481,7 @@ definitions:
                 format: date-time
                 x-nullable: false
 
-    attemptWithQuizDTO:
+    attemptWithQuizFormDTO:
         type: object
         allOf:
             - properties:
@@ -463,6 +490,17 @@ definitions:
 
                 quizForm:
                     $ref: "#/definitions/quizForm"
+                    
+    attemptWithQuizDTO:
+        type: object
+        allOf:
+            - properties:
+                  attemptDTO:
+                      $ref: "#/definitions/attemptDTO"
+
+                  quizDTO:
+                      $ref: "#/definitions/quizDTO"
+
 
     error:
         type: object
