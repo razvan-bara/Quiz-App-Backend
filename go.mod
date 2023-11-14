@@ -44,6 +44,7 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/phyber/negroni-gzip v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rs/cors v1.10.1 // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/urfave/negroni v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.11.3 // indirect
