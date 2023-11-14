@@ -12,9 +12,9 @@ ORDER BY "firstName" AND "lastName";
 
 -- name: CreateUser :one
 INSERT INTO users (
-    email, password, "firstName", "lastName"
+    email, password, "firstName", "lastName", "isAdmin"
 ) VALUES (
-             $1, $2, $3, $4
+             $1, $2, $3, $4, $5
          )
 RETURNING *;
 

